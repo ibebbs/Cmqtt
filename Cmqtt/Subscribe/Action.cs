@@ -19,21 +19,23 @@ namespace Cmqtt.Subscribe
 
             try
             {
-                var client = await MqttClient.CreateAsync(options.Broker, config);
-                var session = await client.ConnectAsync(new MqttClientCredentials(options.Client, options.Username, options.Password), cleanSession: true);
-
-                await client.SubscribeAsync(options.Topic, MqttQualityOfService.ExactlyOnce);
-
-                using (client.MessageStream.ObserveOn(TaskPoolScheduler.Default).Subscribe(message => Console.WriteLine(options.Encoding.AsSystemEncoding().GetString(message.Payload))))
+                using (var client = await MqttClient.CreateAsync(options.Broker, config))
                 {
+                    var session = await client.ConnectAsync(new MqttClientCredentials(options.Client, options.Username, options.Password), cleanSession: true);
 
-                    Console.WriteLine("Subscribed to messages");
-                    Console.WriteLine("Hit <Enter> to exit");
-                    Console.ReadLine();
+                    await client.SubscribeAsync(options.Topic, MqttQualityOfService.ExactlyOnce);
+
+                    using (client.MessageStream.ObserveOn(TaskPoolScheduler.Default).Subscribe(message => Console.WriteLine(options.Encoding.AsSystemEncoding().GetString(message.Payload))))
+                    {
+
+                        Console.WriteLine("Subscribed to messages");
+                        Console.WriteLine("Hit <Enter> to exit");
+                        Console.ReadLine();
+                    }
+
+                    await client.UnsubscribeAsync(options.Topic);
+                    await client.DisconnectAsync();
                 }
-
-                await client.UnsubscribeAsync(options.Topic);
-                await client.DisconnectAsync();
 
                 return 0;
             }
