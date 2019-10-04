@@ -18,18 +18,20 @@ namespace Cmqtt.Publish
 
             try
             {
-                var client = await MqttClient.CreateAsync(options.Broker, config);
-                var session = await client.ConnectAsync(new MqttClientCredentials(options.Client, options.Username, options.Password), cleanSession: true);
+                using (var client = await MqttClient.CreateAsync(options.Broker, config))
+                {
+                    var session = await client.ConnectAsync(new MqttClientCredentials(options.Client, options.Username, options.Password), cleanSession: true);
 
-                var payload = string.IsNullOrEmpty(options.Message)
-                    ? new byte[0]
-                    : options.Encoding.AsSystemEncoding().GetBytes(options.Message);
+                    var payload = string.IsNullOrEmpty(options.Message)
+                        ? new byte[0]
+                        : options.Encoding.AsSystemEncoding().GetBytes(options.Message);
 
-                var message = new MqttApplicationMessage(options.Topic, payload);
+                    var message = new MqttApplicationMessage(options.Topic, payload);
 
-                await client.PublishAsync(message, MqttQualityOfService.AtMostOnce);
+                    await client.PublishAsync(message, MqttQualityOfService.AtMostOnce);
 
-                await client.DisconnectAsync();
+                    await client.DisconnectAsync();
+                }
 
                 Console.WriteLine("Message published successfully.");
 

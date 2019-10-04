@@ -31,10 +31,11 @@ namespace Cmqtt.Subscribe
 
             try
             {
-                var client = await MqttClient.CreateAsync(options.Broker, config);
-                var session = await client.ConnectAsync(new MqttClientCredentials(options.Client, options.Username, options.Password), cleanSession: true);
+                using (var client = await MqttClient.CreateAsync(options.Broker, config))
+                {
+                    var session = await client.ConnectAsync(new MqttClientCredentials(options.Client, options.Username, options.Password), cleanSession: true);
 
-                await client.SubscribeAsync(options.Topic, MqttQualityOfService.ExactlyOnce);
+                    await client.SubscribeAsync(options.Topic, MqttQualityOfService.ExactlyOnce);
 
                 using (client.MessageStream.ObserveOn(TaskPoolScheduler.Default).Select(message => FormatOutput(options, message)).Subscribe(Console.WriteLine))
                 {
@@ -43,8 +44,9 @@ namespace Cmqtt.Subscribe
                     Console.ReadLine();
                 }
 
-                await client.UnsubscribeAsync(options.Topic);
-                await client.DisconnectAsync();
+                    await client.UnsubscribeAsync(options.Topic);
+                    await client.DisconnectAsync();
+                }
 
                 return 0;
             }
