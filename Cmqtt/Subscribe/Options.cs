@@ -10,5 +10,8 @@ namespace Cmqtt.Subscribe
 
         [Option('e', "encoding", Required = false, Default = Encoding.Utf8, HelpText = "The encoding to use for the message")]
         public Encoding Encoding { get; set; }
+
+        [Option('v', "verbose", Required = false, Default = false, HelpText = "If specified, this flag causes message payloads to be published with additional metadata including the topic they were published to and the time they were received")]
+        public bool Verbose { get; set; }
     }
 }

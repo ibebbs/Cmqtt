@@ -8,6 +8,18 @@ namespace Cmqtt.Subscribe
 {
     public static class Action
     {
+        private static string FormatOutput(Options options, MqttApplicationMessage message)
+        {
+            if (options.Verbose)
+            {
+                return Container.FromMessage(message, options).Serialize();
+            }
+            else
+            {
+                return options.Encoding.AsSystemEncoding().GetString(message.Payload);
+            }
+        }
+
         public static async Task<int> Runner(Options options)
         {
             var config = new MqttConfiguration
@@ -24,9 +36,8 @@ namespace Cmqtt.Subscribe
 
                 await client.SubscribeAsync(options.Topic, MqttQualityOfService.ExactlyOnce);
 
-                using (client.MessageStream.ObserveOn(TaskPoolScheduler.Default).Subscribe(message => Console.WriteLine(options.Encoding.AsSystemEncoding().GetString(message.Payload))))
+                using (client.MessageStream.ObserveOn(TaskPoolScheduler.Default).Select(message => FormatOutput(options, message)).Subscribe(Console.WriteLine))
                 {
-
                     Console.WriteLine("Subscribed to messages");
                     Console.WriteLine("Hit <Enter> to exit");
                     Console.ReadLine();
