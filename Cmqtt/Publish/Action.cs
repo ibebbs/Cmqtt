@@ -37,7 +37,7 @@ namespace Cmqtt.Publish
             {
                 using (var client = await MqttClient.CreateAsync(options.Broker, config))
                 {
-                    var session = await client.ConnectAsync(new MqttClientCredentials(options.Client, options.Username, options.Password), cleanSession: true);
+                    var session = await client.ConnectAsync(new MqttClientCredentials(Client.Id.Provider.GetClientId(options), options.Username, options.Password), cleanSession: true);
 
                     var payload = await GetContent(options);
 

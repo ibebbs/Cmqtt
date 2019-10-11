@@ -10,7 +10,7 @@ namespace Cmqtt
         [Option('p', "port", Required = false, Default = 1883, HelpText = "Port on which to connect of the broker.")]
         public int Port { get; set; }
 
-        [Option('c', "client", Required = false, Default = "cmqtt", HelpText = "Client id to use when connecting to the broker.")]
+        [Option('c', "client", Required = false, HelpText = "Client id to use when connecting to the broker.")]
         public string Client { get; set; }
 
         [Option("User", Required = false, Default = null, HelpText = "The username to use to authenticate with the broker")]

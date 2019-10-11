@@ -25,9 +25,15 @@ namespace Cmqtt.Subscribe.State
             {
                 Console.WriteLine($"Connecting to {_options.Broker} on {_options.Port}");
 
-                _ = await _client.ConnectAsync(new MqttClientCredentials(_options.Client, _options.Username, _options.Password), cleanSession: true);
+                _ = await _client.ConnectAsync(new MqttClientCredentials(Client.Id.Provider.GetClientId(_options), _options.Username, _options.Password), cleanSession: true);
 
                 return new Transition.ToSubscribing(_client);
+            }
+            catch (MqttClientException exception)
+            {
+                Console.WriteLine($"Error: '{exception.Message} due to {exception.InnerException?.Message ?? "an unknown reason"}'. Exiting.");
+
+                return new Transition.ToTerminating(_client);
             }
             catch (Exception exception)
             {
