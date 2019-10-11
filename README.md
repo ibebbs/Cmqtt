@@ -28,6 +28,8 @@ Cmqtt 1.0.0
   -t, --topic       Required. Topic on which to publish a message.
 
   -m, --message     The message to publish to the broker.
+  
+  -f, --file        The file containing the message to publish to the broker.
 
   -e, --encoding    (Default: Utf8) The encoding to use for the message
 
